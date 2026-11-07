@@ -169,6 +169,12 @@ android {
         vectorDrawables.useSupportLibrary = true
         resourceConfigurations = supportedLocales
 
+        if (project.hasProperty('targetAbi')) {
+            ndk {
+                abiFilters project.property('targetAbi').split(',')
+            }
+        }
+
         manifestPlaceholders = ["gwpAsanMode": "default"]
 
         def availableLocalesJava = supportedLocales.collect { "\"$it\"" }.join(", ")
