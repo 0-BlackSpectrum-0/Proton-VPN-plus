@@ -177,6 +177,9 @@ fun SettingsRoute(
                         UpgradeTrigger.SETTINGS,
                     )
                 },
+                onPlusFeaturesClick = {
+                    onNavigateToSubSetting(SubSettingsScreen.Type.PlusFeatures)
+                },
                 onAlwaysOnClick = {
                     onNavigateToSubSetting(SubSettingsScreen.Type.KillSwitch)
                 },
@@ -259,6 +262,7 @@ fun SettingsView(
     onSplitTunnelClick: () -> Unit,
     onSplitTunnelUpgrade: () -> Unit,
     onAlwaysOnClick: () -> Unit,
+    onPlusFeaturesClick: () -> Unit,
     onConnectionPreferencesClick: () -> Unit,
     onProtocolClick: () -> Unit,
     onVpnAcceleratorClick: () -> Unit,
@@ -319,7 +323,8 @@ fun SettingsView(
                 onNetShieldUpgrade = onNetShieldUpgradeClick,
                 onSplitTunnelClick = onSplitTunnelClick,
                 onSplitTunnelUpgrade = onSplitTunnelUpgrade,
-                onAlwaysOnClick = onAlwaysOnClick
+                onAlwaysOnClick = onAlwaysOnClick,
+                onPlusFeaturesClick = onPlusFeaturesClick,
             )
             Category(
                 modifier = horizontalItemPadding,
@@ -480,6 +485,7 @@ private fun ColumnScope.FeatureCategory(
     onSplitTunnelClick: () -> Unit,
     onSplitTunnelUpgrade: () -> Unit,
     onAlwaysOnClick: () -> Unit,
+    onPlusFeaturesClick: () -> Unit,
 ) {
     Category(
         modifier = modifier.padding(start = 16.dp, end = 16.dp),
@@ -496,6 +502,12 @@ private fun ColumnScope.FeatureCategory(
                 onClick = if (viewState.netShield.isRestricted) onNetShieldUpgrade else onNetShieldClick
             )
         }
+        SettingRowWithIcon(
+            icon = R.drawable.ic_plus_features,
+            title = stringResource(id = R.string.plus_features_title),
+            settingValue = viewState.plusFeaturesSummary,
+            onClick = onPlusFeaturesClick
+        )
         SettingRowWithIcon(
             icon = viewState.splitTunneling.iconRes,
             iconTint = false,

@@ -46,12 +46,33 @@ class NotificationActionReceiver : BroadcastReceiver() {
     @Inject lateinit var vpnConnectionManager: VpnConnectionManager
     @Inject lateinit var notificationHelper: NotificationHelper
     @Inject lateinit var userSettingsManager: CurrentUserLocalSettingsManager
+    @Inject lateinit var vpnPauseManager: com.protonvpn.android.vpn.pause.VpnPauseManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
             DISCONNECT_ACTION -> {
                 ProtonLogger.log(UiDisconnect, "notification")
                 vpnConnectionManager.disconnect(DisconnectTrigger.Notification("user via notification"))
+            }
+            PAUSE_ACTION -> {
+                val pendingResult = goAsync()
+                mainScope.launch {
+                    try {
+                        vpnPauseManager.pause()
+                    } finally {
+                        pendingResult.finish()
+                    }
+                }
+            }
+            RESUME_ACTION -> {
+                val pendingResult = goAsync()
+                mainScope.launch {
+                    try {
+                        vpnPauseManager.resume()
+                    } finally {
+                        pendingResult.finish()
+                    }
+                }
             }
             SMART_PROTOCOL_ACTION -> {
                 val connectIntentData = intent.getSerializableExtra(EXTRA_SWITCH_INTENT) as ConnectIntentData
@@ -75,6 +96,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     companion object {
         const val DISCONNECT_ACTION = "DISCONNECT_ACTION"
+        const val PAUSE_ACTION = "PAUSE_ACTION"
+        const val RESUME_ACTION = "RESUME_ACTION"
         const val SMART_PROTOCOL_ACTION = "SMART_PROTOCOL_ACTION"
         const val EXTRA_SWITCH_INTENT = "SWITCH_INFORMATION"
 

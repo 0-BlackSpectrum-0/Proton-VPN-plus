@@ -149,6 +149,12 @@ class SettingsChangeViewModel @Inject constructor(
         }
     }
 
+    fun onPlusFeaturesUpdated(uiDelegate: VpnUiDelegate) {
+        viewModelScope.launch {
+            reconnectionCheck(uiDelegate, DontShowAgainStore.Type.PlusFeaturesChangeWhenConnected)
+        }
+    }
+
     fun onSplitTunnelingUpdated(uiDelegate: VpnUiDelegate) {
         viewModelScope.launch {
             reconnectionCheck(uiDelegate, DontShowAgainStore.Type.SplitTunnelingChangeWhenConnected)

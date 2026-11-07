@@ -108,7 +108,8 @@ data class LocalUserSettings(
     val tvAutoConnectOnBoot: Boolean = false,
     val vpnAccelerator: Boolean = true,
     val ipV6Enabled: Boolean = true,
-    val customDns: CustomDnsSettings = CustomDnsSettings(false)
+    val customDns: CustomDnsSettings = CustomDnsSettings(false),
+    val plusFeatures: PlusFeaturesSettings = PlusFeaturesSettings()
     // Whenever adding a new setting add it also in toLogList below.
 ) {
 
@@ -148,7 +149,11 @@ fun LocalUserSettings.toLogList(): List<String> {
         "Custom DNS enabled: ${customDns.toggleEnabled.toLog()}",
         "Custom DNS list: ${customDns.rawDnsList.itemCountToLog()}",
         "UI theme: $theme",
-        "TV auto connect on boot: ${tvAutoConnectOnBoot.toLog()}"
+        "TV auto connect on boot: ${tvAutoConnectOnBoot.toLog()}",
+        with(plusFeatures) {
+            "Plus blacklist: ${internetBlacklist.isEnabled.toLog()}, apps: ${internetBlacklist.packages.itemCountToLog()}; " +
+                "Plus whitelist: ${vpnWhitelist.isEnabled.toLog()}, apps: ${vpnWhitelist.packages.itemCountToLog()}"
+        }
     )
     return regularSettings
 }

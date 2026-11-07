@@ -77,6 +77,7 @@ class NotificationHelper @Inject constructor(
     private val isTv: IsTvCheck,
     private val createLaunchIntent: CreateLaunchIntent,
     private val notificationChannels: dagger.Lazy<NotificationChannels>,
+    private val vpnPauseManager: dagger.Lazy<com.protonvpn.android.vpn.pause.VpnPauseManager>,
 ) {
 
     init {
@@ -84,9 +85,17 @@ class NotificationHelper @Inject constructor(
             updateNotification()
         }.launchIn(scope)
 
+
+
+        vpnPauseManager.get().state.onEach {
+            updateNotification()
+        }.launchIn(scope)
+
         trafficMonitor.trafficStatus.onEach {
             updateNotification()
         }.launchIn(scope)
+
+
     }
 
     @Parcelize
@@ -240,7 +249,39 @@ class NotificationHelper @Inject constructor(
         }
 
         when (vpnStatus.state) {
-            Connecting, Connected -> {
+            Connected -> {
+                val isPaused = vpnPauseManager.get().isPaused
+                val pauseResumeAction = if (isPaused) {
+                    val resumeIntent = NotificationActionReceiver.createIntent(context, NotificationActionReceiver.RESUME_ACTION)
+                    val resumePendingIntent = PendingIntent.getBroadcast(
+                        context, PENDING_REQUEST_PAUSE_RESUME, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    NotificationCompat.Action(
+                        R.drawable.ic_play,
+                        context.getString(R.string.plus_resume),
+                        resumePendingIntent
+                    )
+                } else {
+                    val pauseIntent = NotificationActionReceiver.createIntent(context, NotificationActionReceiver.PAUSE_ACTION)
+                    val pausePendingIntent = PendingIntent.getBroadcast(
+                        context, PENDING_REQUEST_PAUSE_RESUME, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    NotificationCompat.Action(
+                        R.drawable.ic_pause,
+                        context.getString(R.string.plus_pause),
+                        pausePendingIntent
+                    )
+                }
+                builder.addAction(pauseResumeAction)
+
+                val disconnectAction = NotificationCompat.Action(
+                    CoreR.drawable.ic_proton_cross,
+                    context.getString(R.string.disconnect),
+                    disconnectPendingIntent
+                )
+                builder.addAction(disconnectAction)
+            }
+            Connecting -> {
                 val disconnectAction = NotificationCompat.Action(
                     CoreR.drawable.ic_proton_cross,
                     context.getString(R.string.disconnect),
@@ -296,7 +337,7 @@ class NotificationHelper @Inject constructor(
             Disabled, is Error -> R.drawable.ic_vpn_status_disconnected
             Connecting, WaitingForNetwork, Disconnecting, CheckingAvailability, ScanningPorts, Reconnecting ->
                 R.drawable.ic_vpn_status_connecting
-            Connected -> R.drawable.ic_vpn_status_connected
+            Connected -> if (vpnPauseManager.get().isPaused) R.drawable.ic_vpn_status_paused else R.drawable.ic_vpn_status_connected
         }
     }
 
@@ -307,7 +348,11 @@ class NotificationHelper @Inject constructor(
             CheckingAvailability, ScanningPorts -> context.getString(R.string.loaderCheckingAvailability)
             Disabled -> context.getString(R.string.loaderNotConnected)
             Connecting -> context.getString(R.string.loaderConnectingTo, getServerName(vpnStatus))
-            Connected -> context.getString(R.string.loaderConnectedTo, getServerName(vpnStatus))
+            Connected -> if (vpnPauseManager.get().isPaused) {
+                context.getString(R.string.plus_paused_title, getServerName(vpnStatus))
+            } else {
+                context.getString(R.string.loaderConnectedTo, getServerName(vpnStatus))
+            }
             Disconnecting -> context.getString(R.string.state_disconnecting)
             Reconnecting -> context.getString(R.string.loaderReconnecting)
             WaitingForNetwork -> context.getString(R.string.loaderReconnectNoNetwork)
@@ -387,5 +432,6 @@ class NotificationHelper @Inject constructor(
     companion object {
         const val PENDING_REQUEST_STATUS = 0
         const val PENDING_REQUEST_OTHER = 1
+        const val PENDING_REQUEST_PAUSE_RESUME = 2
     }
 }

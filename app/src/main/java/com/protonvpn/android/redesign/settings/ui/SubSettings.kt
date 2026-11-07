@@ -154,6 +154,30 @@ fun SubSettingsRoute(
                 }
             }
 
+            SubSettingsScreen.Type.PlusFeatures -> {
+                com.protonvpn.android.redesign.settings.ui.plus.PlusFeaturesScreen(
+                    onClose = onClose,
+                    onNavigateToBlacklist = { onNavigateToSubSetting(SubSettingsScreen.Type.PlusInternetBlacklist) },
+                    onNavigateToWhitelist = { onNavigateToSubSetting(SubSettingsScreen.Type.PlusVpnWhitelist) },
+                )
+            }
+
+            SubSettingsScreen.Type.PlusInternetBlacklist -> {
+                com.protonvpn.android.redesign.settings.ui.plus.PlusAppListScreen(
+                    type = com.protonvpn.android.redesign.settings.ui.plus.PlusAppListType.Blacklist,
+                    onClose = onClose,
+                    onSaved = { settingsChangeViewModel.onPlusFeaturesUpdated(vpnUiDelegate) },
+                )
+            }
+
+            SubSettingsScreen.Type.PlusVpnWhitelist -> {
+                com.protonvpn.android.redesign.settings.ui.plus.PlusAppListScreen(
+                    type = com.protonvpn.android.redesign.settings.ui.plus.PlusAppListType.Whitelist,
+                    onClose = onClose,
+                    onSaved = { settingsChangeViewModel.onPlusFeaturesUpdated(vpnUiDelegate) },
+                )
+            }
+
             SubSettingsScreen.Type.Account -> {
                 val accountViewState = viewModel.accountSettings.collectAsStateWithLifecycle(initialValue = null).value
                 val changePasswordContract = rememberLauncherForActivityResult(StartPasswordManagement()) {}

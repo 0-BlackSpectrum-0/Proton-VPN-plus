@@ -202,6 +202,7 @@ class EffectiveCurrentUserSettings(
     val splitTunneling = distinct { it.splitTunneling }
     val ipV6Enabled = distinct { it.ipV6Enabled }
     val customDns = distinct { it.customDns }
+    val plusFeatures = distinct { it.plusFeatures }
 
     @Inject
     constructor(mainScope: CoroutineScope, effectiveCurrentUserSettingsFlow: EffectiveCurrentUserSettingsFlow)

@@ -79,6 +79,7 @@ scottyab-aes-crypto-version = "0.0.5"
 seancfoley-ipaddress-version = "5.5.1"
 sentry-plugin-version = "5.12.2"
 sentry-version = "7.22.5"
+shizuku-version = "13.1.5"
 slf4j-version = "1.7.36"
 squareup-leakcanary-version = "2.14"
 tony19-logback-version = "2.0.0"
@@ -295,6 +296,8 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 scottyab-aes-crypto = { group = "com.scottyab", name = "aes-crypto", version.ref = "scottyab-aes-crypto-version" }
 seancfoley-ipaddress = { group = "com.github.seancfoley", name = "ipaddress", version.ref = "seancfoley-ipaddress-version" }
 sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry-version" }
+shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku-version" }
+shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku-version" }
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-version" }
 squareup-leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "squareup-leakcanary-version" }
 squareup-leakcanary-object-watcher = { group = "com.squareup.leakcanary", name = "leakcanary-object-watcher-android", version.ref = "squareup-leakcanary-version" }

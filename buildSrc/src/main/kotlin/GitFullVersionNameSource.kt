@@ -35,7 +35,7 @@ abstract class GitFullVersionNameSource : ValueSource<String, GitFullVersionName
             .trim()
             .split("\n")
             .reversed()
-            .find { it.matches(Regex("\\d+(\\.\\d+){1,3}")) }
+            .find { it.matches(Regex("\\d+(\\.\\d+){1,3}")) } ?: "5.5.0"
         val tagSplit = tag
             ?.split(".")
             ?.map { it.toInt() }

@@ -74,6 +74,7 @@ class ProTunBackend @Inject constructor(
     private val computeAllowedIPs: ComputeAllowedIPs,
     private val preparePeers: PreparePeersForConnectionProTun,
     private val packetCapture: PacketCapture,
+    private val vpnPauseManager: com.protonvpn.android.vpn.pause.VpnPauseManager,
 ) : VpnBackend(
     settingsForConnection, certificateRepository, networkManager, networkCapabilitiesFlow, VpnProtocol.ProTun, mainScope,
     dispatcherProvider, localAgentUnreachableTracker, currentUser, getNetZone, foregroundActivityTracker, okHttp, shouldWaitForTunnelVerified = false
@@ -126,7 +127,8 @@ class ProTunBackend @Inject constructor(
             sessionId,
             certificateRepository,
             computeAllowedIPs,
-            packetCapture.activeFileFlow.first()
+            packetCapture.activeFileFlow.first(),
+            vpnPauseManager.isPaused
         )
         vpnCore.connectionManager.connect(config)
 

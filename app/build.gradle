@@ -131,7 +131,7 @@ def preferencesSalt = System.getenv("DEPRECATED_PREF_SALT") ?: "Salt"
 def preferencesKey = System.getenv("DEPRECATED_PREF_KEY") ?: "Key"
 def serviceAccountCredentialsPath = project.hasProperty('serviceAccountFilePath') ? serviceAccountFilePath : "service_account.json"
 def testAccountPassword = System.getenv("TEST_ACCOUNT_PASS") ?: project.hasProperty('testAccountPassword') ? testAccountPassword : "Pass"
-def appId = project.hasProperty('appId') ? appId : "ch.protonvpn.android"
+def appId = project.hasProperty('appId') ? appId : "ch.protonvpn.android.plus"
 def supportedLocales = ['ar', 'b+es+419', 'be', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es-rES', 'es-rMX', 'fa', 'fi', 'fil', 'fr', 'hu', 'in', 'it', 'ja', 'ka', 'ko', 'nb-rNO', 'nl', 'pl', 'pt-rBR', 'pt-rPT', 'ro', 'ru', 'sk', 'sl', 'sv-rSE', 'th', 'tr', 'uk', 'vi', 'zh-rCN', 'zh-rTW']
 def helpers = new Helpers(rootDir, providers)
 def debugKeystorePath = System.getenv("DEBUG_KEYSTORE_FILE")
@@ -403,11 +403,11 @@ android {
         disable 'ExtraTranslation', 'ImpliedQuantity', 'MissingDefaultResource', 'MissingTranslation'
         ignoreWarnings = true
     }
-    room {
-        schemaDirectory "$projectDir/schemas"
-        // Using Java generation, kotlin generator generates incorrect code: https://issuetracker.google.com/issues/446633192
-        generateKotlin false
-    }
+}
+
+room {
+    schemaDirectory "$projectDir/schemas"
+    generateKotlin false
 }
 
 androidComponents {
@@ -755,6 +755,8 @@ dependencies {
     implementation(platform(libs.kotlin.bom))
 
     implementation(libs.dnsjava.dnsjava)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
     implementation(libs.java.jna) {
         artifact {
             type = "aar"

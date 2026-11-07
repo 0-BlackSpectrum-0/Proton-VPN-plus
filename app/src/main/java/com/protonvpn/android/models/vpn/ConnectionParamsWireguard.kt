@@ -68,13 +68,15 @@ class ConnectionParamsWireguard(
         sessionId: SessionId?,
         certificateRepository: CertificateRepository,
         computeAllowedIPs: ComputeAllowedIPs,
+        isPaused: Boolean = false,
     ): Config =
         getTunnelConfig(
             context.packageName,
             userSettings,
             sessionId,
             certificateRepository,
-            computeAllowedIPs
+            computeAllowedIPs,
+            isPaused
         )
 
     @Throws(IllegalStateException::class)
@@ -85,6 +87,7 @@ class ConnectionParamsWireguard(
         sessionId: SessionId?,
         certificateRepository: CertificateRepository,
         computeAllowedIPs: ComputeAllowedIPs,
+        isPaused: Boolean = false,
     ): Config {
         val entryIp = entryIp ?: requireNotNull(connectingDomain?.getEntryIp(protocolSelection))
 
@@ -121,7 +124,14 @@ class ConnectionParamsWireguard(
             .parseAddresses(addresses)
             .parseDnsServers(dnsServers.trim())
             .parsePrivateKey(certificateRepository.getX25519Key(sessionId))
-            .splitTunnelingApps(connectIntent, myPackageName, splitTunneling, userSettings.lanConnectionsAllowDirect)
+            .splitTunnelingApps(
+                connectIntent,
+                myPackageName,
+                splitTunneling,
+                userSettings.lanConnectionsAllowDirect,
+                userSettings.plusFeatures,
+                isPaused
+            )
             .build()
 
         return Config.Builder().addPeer(peer).setInterface(iface).build()
@@ -141,10 +151,12 @@ class ConnectionParamsWireguard(
         connectIntent: AnyConnectIntent,
         myPackageName: String,
         splitTunneling: SplitTunnelingSettings,
-        allowDirectLanConnections: Boolean
+        allowDirectLanConnections: Boolean,
+        plusFeatures: com.protonvpn.android.settings.data.PlusFeaturesSettings,
+        isPaused: Boolean,
     ): Interface.Builder {
         val configurator = SplitTunnelAppsWgConfigurator(this)
-        applyAppsSplitTunneling(configurator, connectIntent, myPackageName, splitTunneling, allowDirectLanConnections)
+        applyAppsSplitTunneling(configurator, connectIntent, myPackageName, splitTunneling, allowDirectLanConnections, plusFeatures, isPaused)
         return this
     }
 }

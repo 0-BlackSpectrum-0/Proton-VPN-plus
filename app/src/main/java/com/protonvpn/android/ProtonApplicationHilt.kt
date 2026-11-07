@@ -42,6 +42,7 @@ class ProtonApplicationHilt : ProtonApplication(), Configuration.Provider {
     @Inject lateinit var testNotificationLoader: dagger.Lazy<TestNotificationLoader>
     @Inject lateinit var updateMigration: dagger.Lazy<UpdateMigration>
     @Inject lateinit var memoryMonitor: dagger.Lazy<MemoryMonitor>
+    @Inject lateinit var blacklistCoordinator: dagger.Lazy<com.protonvpn.android.plus.blacklist.BlacklistCoordinator>
 
     override fun onCreate() {
         super.onCreate()
@@ -64,6 +65,7 @@ class ProtonApplicationHilt : ProtonApplication(), Configuration.Provider {
             updateMigration.get().handleUpdate()
             onboardingTelemetry.get().onAppStart()
             memoryMonitor.get().start()
+            blacklistCoordinator.get()
         }
     }
 

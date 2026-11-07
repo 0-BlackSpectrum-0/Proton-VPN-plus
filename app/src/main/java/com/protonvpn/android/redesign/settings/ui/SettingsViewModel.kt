@@ -174,6 +174,7 @@ class SettingsViewModel @Inject constructor(
             val mode: SplitTunnelingMode,
             val currentModeAppNames: List<CharSequence>,
             val currentModeIps: List<String>,
+            val isAppListOverriddenByWhitelist: Boolean = false,
             isFreeUser: Boolean,
             override val iconRes: Int = if (isEnabled) R.drawable.feature_splittunneling_on else R.drawable.feature_splittunneling_off
         ) : SettingViewState<Boolean>(
@@ -374,6 +375,7 @@ class SettingsViewModel @Inject constructor(
         val appUpdateBannerState: AppUpdateBannerState,
         val showAccountCategory: Boolean,
         val connectionPreferences: SettingViewState.ConnectionPreferencesState,
+        val plusFeaturesSummary: SettingValue? = null,
     )
 
     enum class UiEvent {
@@ -507,6 +509,7 @@ class SettingsViewModel @Inject constructor(
                     mode = settings.splitTunneling.mode,
                     currentModeAppNames = currentModeAppNames,
                     currentModeIps = settings.splitTunneling.currentModeIps(),
+                    isAppListOverriddenByWhitelist = settings.plusFeatures.vpnWhitelist.isEnabled && settings.plusFeatures.vpnWhitelist.packages.isNotEmpty(),
                     isFreeUser = isFree,
                 ),
                 protocol = SettingViewState.Protocol(
@@ -554,6 +557,12 @@ class SettingsViewModel @Inject constructor(
                     ),
                     excludeLocationsPreferences = excludedLocationPreferences,
                 ),
+                plusFeaturesSummary = run {
+                    val plus = settings.plusFeatures
+                    val count = (if (plus.internetBlacklist.isEnabled) 1 else 0) + (if (plus.vpnWhitelist.isEnabled) 1 else 0)
+                    if (count > 0) SettingValue.SettingText("$count on")
+                    else SettingValue.SettingStringRes(R.string.plus_features_summary_off)
+                },
             )
         }
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(1_000), replay = 1)

@@ -154,6 +154,38 @@ class CurrentUserLocalSettingsManager @Inject constructor(
             current.copy(splitTunneling = newSplitTunneling)
         }
 
+    suspend fun setPlusBlacklistEnabled(isEnabled: Boolean) = update { current ->
+        current.copy(
+            plusFeatures = current.plusFeatures.copy(
+                internetBlacklist = current.plusFeatures.internetBlacklist.copy(isEnabled = isEnabled)
+            )
+        )
+    }
+
+    suspend fun setPlusWhitelistEnabled(isEnabled: Boolean) = update { current ->
+        current.copy(
+            plusFeatures = current.plusFeatures.copy(
+                vpnWhitelist = current.plusFeatures.vpnWhitelist.copy(isEnabled = isEnabled)
+            )
+        )
+    }
+
+    suspend fun updatePlusBlacklistApps(packages: List<String>) = update { current ->
+        current.copy(
+            plusFeatures = current.plusFeatures.copy(
+                internetBlacklist = current.plusFeatures.internetBlacklist.copy(packages = packages)
+            )
+        )
+    }
+
+    suspend fun updatePlusWhitelistApps(packages: List<String>) = update { current ->
+        current.copy(
+            plusFeatures = current.plusFeatures.copy(
+                vpnWhitelist = current.plusFeatures.vpnWhitelist.copy(packages = packages)
+            )
+        )
+    }
+
     suspend fun updateTelemetry(isEnabled: Boolean) =
         update { current -> current.copy(telemetry = isEnabled) }
 

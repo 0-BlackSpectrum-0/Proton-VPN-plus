@@ -72,6 +72,7 @@ class ConnectionParamsProTun(
         certificateRepository: CertificateRepository,
         computeAllowedIPs: ComputeAllowedIPs,
         pcapFile: PacketCaptureInfo?,
+        isPaused: Boolean = false,
     ): InitialConfig {
         val allowedIps =
             if (connectIntent is AnyConnectIntent.GuestHole) {
@@ -84,7 +85,7 @@ class ConnectionParamsProTun(
             supportInTunnelIPv6 = enableIPv6 && server.isIPv6Supported,
             customDns = userSettings.customDns.effectiveDnsList,
             routes = allowedIps.map { it.toIpNetworkPrefix() },
-            splitTunnelAppsConfig = splitTunnelAppsConfig(context.packageName, userSettings),
+            splitTunnelAppsConfig = splitTunnelAppsConfig(context.packageName, userSettings, isPaused),
             mtu = 1420,
         )
 
@@ -101,6 +102,7 @@ class ConnectionParamsProTun(
     fun splitTunnelAppsConfig(
         myPackageName: String,
         userSettings: LocalUserSettings,
+        isPaused: Boolean = false,
     ): SplitTunnelAppsConfig? {
         val configurator = SplitTunnelAppsProTunConfigurator()
         applyAppsSplitTunneling(
@@ -108,7 +110,9 @@ class ConnectionParamsProTun(
             connectIntent,
             myPackageName,
             userSettings.splitTunneling,
-            userSettings.lanConnectionsAllowDirect
+            userSettings.lanConnectionsAllowDirect,
+            userSettings.plusFeatures,
+            isPaused
         )
         return configurator.buildConfig()
     }

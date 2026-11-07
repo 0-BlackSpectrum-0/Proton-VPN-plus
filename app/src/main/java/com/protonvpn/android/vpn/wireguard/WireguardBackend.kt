@@ -95,6 +95,7 @@ class WireguardBackend @Inject constructor(
     @SharedOkHttpClient okHttp: OkHttpClient,
     private val serverNameTopStrategyEnabled: ServerNameTopStrategyEnabled,
     private val vpnAlwaysOnStorage: VpnAlwaysOnStorage,
+    private val vpnPauseManager: com.protonvpn.android.vpn.pause.VpnPauseManager,
 ) : VpnBackend(
     settingsForConnection, certificateRepository, networkManager, networkCapabilitiesFlow, VpnProtocol.WireGuard, mainScope,
     dispatcherProvider, localAgentUnreachableTracker, currentUser, getNetZone, foregroundActivityTracker, okHttp
@@ -147,7 +148,7 @@ class WireguardBackend @Inject constructor(
         try {
             val settings = settingsForConnection.getFor(wireguardParams.connectIntent)
             val config = wireguardParams.getTunnelConfig(
-                context, settings, currentUser.sessionId(), certificateRepository, computeAllowedIPs
+                context, settings, currentUser.sessionId(), certificateRepository, computeAllowedIPs, vpnPauseManager.isPaused
             )
             val transmission = wireguardParams.protocolSelection?.transmission ?: TransmissionProtocol.UDP
             val transmissionStr = transmission.toString().lowercase()

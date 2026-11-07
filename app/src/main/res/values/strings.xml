@@ -18,7 +18,7 @@
  along with ProtonVPN.  If not, see <https://www.gnu.org/licenses/>.
 -->
 <resources>
-    <string name="app_name" translatable="false">Proton VPN</string>
+    <string name="app_name" translatable="false">Proton VPN Plus</string>
     <string name="app_icon_name_classic">Classic</string>
     <string name="app_icon_name_dark">Dark</string>
     <string name="app_icon_name_retro">Retro</string>
@@ -1840,4 +1840,33 @@
     <string name="session_fork_user_code_step3"><![CDATA[Enter the code: <b>%1$s</b>]]></string>
     <!-- Parameter: web address for the support website, e.g. "protonvpn.com/support" -->
     <string name="session_fork_user_code_support"><![CDATA[Still need help? Visit <b>%1$s</b>]]></string>
+    <!-- Plus features -->
+    <string name="plus_pause">Pause</string>
+    <string name="plus_resume">Resume</string>
+    <string name="plus_paused_title">Paused · %s</string>
+    <string name="plus_features_title">Plus features</string>
+    <string name="plus_features_summary_format">%d on</string>
+    <string name="plus_features_summary_off">Off</string>
+    <string name="plus_internet_blacklist_title">Internet Blacklist</string>
+    <string name="plus_vpn_whitelist_title">VPN Whitelist</string>
+    <string name="plus_blacklist_description">Block all internet access for selected apps while connected to VPN.</string>
+    <string name="plus_whitelist_description">Route only selected apps through the VPN. If empty, all apps use the VPN.</string>
+    <string name="plus_whitelist_empty_note">Empty list = all apps use the VPN</string>
+    <string name="plus_save">Save</string>
+    <string name="plus_search_hint">Search apps</string>
+    <string name="plus_selected_apps">Selected (%d)</string>
+    <string name="plus_other_apps">Apps</string>
+    <string name="plus_system_apps">System apps</string>
+    <string name="plus_show_system_apps">Show system apps</string>
+    <string name="plus_hide_system_apps">Hide system apps</string>
+    <string name="plus_in_other_list_blacklist">In Internet Blacklist</string>
+    <string name="plus_in_other_list_whitelist">In VPN Whitelist</string>
+    <string name="plus_release_all_blocks">Release all blocks</string>
+    <string name="plus_release_all_blocks_confirm">All system firewall and blacklist blocks have been released.</string>
+    <string name="plus_shizuku_ready">Enforcing only while connected</string>
+    <string name="plus_shizuku_root_ready">Root firewall active: enforcing while connected</string>
+    <string name="plus_shizuku_needed">Requires Shizuku or Root to enforce system blocks</string>
+    <string name="plus_shizuku_permission_needed">Shizuku permission required to apply blacklist rules</string>
+    <string name="plus_core_system_app_warning">Blocking core system packages (e.g. Google Play Services) may cause instability.</string>
+    <string name="plus_split_tunnel_overridden_banner">App lists overridden by VPN Whitelist</string>
 </resources>

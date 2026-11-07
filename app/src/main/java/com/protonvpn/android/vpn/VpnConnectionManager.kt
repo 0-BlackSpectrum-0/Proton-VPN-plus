@@ -698,6 +698,11 @@ class VpnConnectionManager @Inject constructor(
         }
     }
 
+    suspend fun refreshTunnel(reason: String) {
+        ProtonLogger.logCustom(LogCategory.CONN, "refreshTunnel: $reason")
+        activeBackend?.reconnect()
+    }
+
     // Will do complete reconnection, which may result in different protocol or server
     // if compared to original connection
     fun reconnect(triggerAction: String, uiDelegate: VpnUiDelegate = vpnBackgroundUiDelegate) {

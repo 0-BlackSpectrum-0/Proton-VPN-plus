@@ -21,7 +21,7 @@ package com.protonvpn.android.models.vpn
 
 import androidx.annotation.VisibleForTesting
 import com.protonvpn.android.redesign.vpn.AnyConnectIntent
-import com.protonvpn.android.settings.data.SplitTunnelingMode
+import com.protonvpn.android.settings.data.PlusFeaturesSettings
 import com.protonvpn.android.settings.data.SplitTunnelingSettings
 
 @VisibleForTesting
@@ -40,26 +40,24 @@ fun applyAppsSplitTunneling(
     myPackageName: String,
     splitTunneling: SplitTunnelingSettings,
     allowDirectLanConnections: Boolean,
+    plusFeatures: PlusFeaturesSettings = PlusFeaturesSettings(),
+    isPaused: Boolean = false,
+    blacklistNeedsTunnel: Boolean = false,
 ) {
-    with(splitTunneling) {
-        val directConnectionsExcludedApps =
-            if (allowDirectLanConnections) DIRECT_CONNECTIONS_EXCLUDED_APPS
-            else emptyList()
-        when {
-            connectIntent is AnyConnectIntent.GuestHole ->
-                configurator.includeApplications(listOf(myPackageName))
-
-            isEnabled && mode == SplitTunnelingMode.INCLUDE_ONLY && includedApps.isNotEmpty() -> {
-                configurator.includeApplications(listOf(myPackageName))
-                configurator.includeApplications(includedApps)
-            }
-
-            isEnabled && mode == SplitTunnelingMode.EXCLUDE_ONLY && excludedApps.isNotEmpty() ->
-                configurator.excludeApplications(excludedApps + directConnectionsExcludedApps - myPackageName)
-
-            // When split tunneling disabled or include enabled without included apps
-            allowDirectLanConnections ->
-                configurator.excludeApplications(directConnectionsExcludedApps)
+    val plan = computeAppRoutingPlan(
+        connectIntent = connectIntent,
+        myPackageName = myPackageName,
+        legacy = splitTunneling,
+        plus = plusFeatures,
+        allowDirectLanConnections = allowDirectLanConnections,
+        isPaused = isPaused,
+        blacklistNeedsTunnel = blacklistNeedsTunnel,
+    )
+    when (val tunnel = plan.tunnel) {
+        is TunnelApps.Include -> configurator.includeApplications(tunnel.packages.toList())
+        is TunnelApps.Exclude -> configurator.excludeApplications(tunnel.packages.toList())
+        is TunnelApps.All -> {
+            // When all apps are tunneled, no specific include or exclude list is applied
         }
     }
 }
