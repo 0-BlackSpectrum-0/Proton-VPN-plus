@@ -170,7 +170,7 @@ class ChangeServerTests {
         changeServerViewStateFlow.test {
             assertNull(awaitItem())
             changeServerManager.changeServer(mockVpnUiDelegate)
-            assertEquals(ChangeServerViewState.Locked(SMALL_DELAY_S, SMALL_DELAY_S, false), awaitItem())
+            assertEquals(ChangeServerViewState.Unlocked, awaitItem())
         }
     }
 
@@ -181,13 +181,13 @@ class ChangeServerTests {
                 changeServerManager.changeServer(mockVpnUiDelegate)
             }
             runCurrent()
-            assertEquals(ChangeServerViewState.Locked(LARGE_DELAY_S, LARGE_DELAY_S, true), expectMostRecentItem())
+            assertEquals(ChangeServerViewState.Unlocked, expectMostRecentItem())
         }
     }
 
     @Test
     fun `updating to plus removes change server`() =
-        testUpdatingToPlus(VpnState.Connected, ChangeServerViewState.Locked(SMALL_DELAY_S, SMALL_DELAY_S, false))
+        testUpdatingToPlus(VpnState.Connected, ChangeServerViewState.Unlocked)
 
     @Test
     fun `updating to plus removes change server while connecting`() =

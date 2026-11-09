@@ -143,7 +143,23 @@ android {
     testNamespace 'com.protonvpn'
     useLibrary 'org.apache.http.legacy'
     signingConfigs {
-        if (debugKeystorePath) {
+        def customKeystore = rootProject.file("protonvpn-plus.jks")
+        def customKeystorePath = System.getenv("KEYSTORE_FILE") ?: (customKeystore.exists() ? customKeystore.absolutePath : null)
+
+        if (customKeystorePath && file(customKeystorePath).exists()) {
+            debug {
+                storeFile file(customKeystorePath)
+                storePassword(System.getenv("KEYSTORE_PASSWORD") ?: "protonvpn")
+                keyAlias(System.getenv("KEY_ALIAS") ?: "protonplus")
+                keyPassword(System.getenv("KEY_PASSWORD") ?: "protonvpn")
+            }
+            release {
+                storeFile file(customKeystorePath)
+                storePassword(System.getenv("KEYSTORE_PASSWORD") ?: "protonvpn")
+                keyAlias(System.getenv("KEY_ALIAS") ?: "protonplus")
+                keyPassword(System.getenv("KEY_PASSWORD") ?: "protonvpn")
+            }
+        } else if (debugKeystorePath) {
             debug {
                 storeFile file(debugKeystorePath)
                 storePassword 'android'
@@ -342,7 +358,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.debug
+            signingConfig(signingConfigs.hasProperty('release') && signingConfigs.release.storeFile != null ? signingConfigs.release : signingConfigs.debug)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

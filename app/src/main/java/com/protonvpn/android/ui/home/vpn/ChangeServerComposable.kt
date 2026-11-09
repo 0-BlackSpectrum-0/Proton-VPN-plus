@@ -83,10 +83,7 @@ fun ChangeServerButton(
             when (state) {
                 is ChangeServerViewState.Unlocked -> onChangeServerClick()
                 is ChangeServerViewState.Disabled -> {}
-                is ChangeServerViewState.Locked -> {
-                    dialogShown = true
-                    onUpgradeButtonShown()
-                }
+                is ChangeServerViewState.Locked -> onChangeServerClick()
             }
         },
         contained = false,

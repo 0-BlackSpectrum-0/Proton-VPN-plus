@@ -65,30 +65,8 @@ class ChangeServerViewStateFlow @Inject constructor(
 
     private val isFreeUser = currentUser.vpnUserFlow.map { it?.isFreeUser == true }
 
-    private val restrictedStateFlow = combine(
-        changeServerPrefs.lastChangeTimestampFlow,
-        changeServerPrefs.changeCounterFlow,
-        tickFlow(1.seconds, clock),
-        changeServerConfigFlow
-    ) { lastChangeTimestamp, actionCounter, timestamp, changeServerConfig ->
-        val elapsedSeconds = (timestamp - lastChangeTimestamp) / 1000
-        val delayInSeconds =
-            if (changeServerPrefs.changeCounter == changeServerConfig.maxAttemptCount)
-                changeServerConfig.longDelayInSeconds
-            else
-                changeServerConfig.shortDelayInSeconds
-        val remainingCooldown = delayInSeconds - elapsedSeconds
-
-        if (remainingCooldown > 0) {
-            ChangeServerViewState.Locked(
-                remainingCooldown.toInt(),
-                delayInSeconds,
-                actionCounter == changeServerConfig.maxAttemptCount
-            )
-        } else {
-            ChangeServerViewState.Unlocked
-        }
-    }
+    // Delay timer removed for testing purposes - always allow server change when connected
+    private val restrictedStateFlow: Flow<ChangeServerViewState> = flowOf(ChangeServerViewState.Unlocked)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val freeUserChangeServerState: Flow<ChangeServerViewState?> =

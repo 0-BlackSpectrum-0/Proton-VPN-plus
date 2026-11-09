@@ -11,3 +11,9 @@
 .externalNativeBuild
 pmcrypto/build/
 app/src/androidTest/assets/sensitive/
+
+# Android Keystore
+*.jks
+*.keystore
+protonvpn-plus.jks
+keystore_b64.txt

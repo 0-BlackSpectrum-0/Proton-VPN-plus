@@ -41,9 +41,9 @@ class DefaultChangeServerConfigFlow @Inject constructor(
 
     private val flow =  appConfig.appConfigFlow.map { appConfigResponse ->
         ChangeServerConfig(
-            shortDelayInSeconds = appConfigResponse.changeServerShortDelayInSeconds,
-            maxAttemptCount = appConfigResponse.changeServerAttemptLimit,
-            longDelayInSeconds = appConfigResponse.changeServerLongDelayInSeconds
+            shortDelayInSeconds = 0,
+            maxAttemptCount = Int.MAX_VALUE,
+            longDelayInSeconds = 0
         )
     }.distinctUntilChanged()
 

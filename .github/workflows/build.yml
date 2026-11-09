@@ -43,8 +43,28 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          mkdir -p $ANDROID_HOME/licenses || true
+          echo -e "\n24333f8a63b6825ea9c5513f83c2eb9c0c75f07e" > $ANDROID_HOME/licenses/android-sdk-license || true
+          echo -e "\n84831b9409646a56ec4421a4b804e6147d3e0479\n89337d12077e084bca2953c68ca7784185e48deb" > $ANDROID_HOME/licenses/android-sdk-preview-license || true
+          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-arm-dbt-license || true
+          echo -e "\n2b8c53842b0e3023677f8b787f6b0f53320d0e6c" > $ANDROID_HOME/licenses/google-gdk-license || true
+          echo -e "\n33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > $ANDROID_HOME/licenses/google-tv-license || true
+          echo -e "\ne9acab5b5f1556e4dd5113c80e459e2f42a69135" > $ANDROID_HOME/licenses/mips-android-sysimage-license || true
+
+      - name: Configure Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Restoring keystore from GitHub Secret KEYSTORE_BASE64..."
+            echo "$KEYSTORE_BASE64" | base64 -d > protonvpn-plus.jks
+          else
+            echo "KEYSTORE_BASE64 secret not found; generating keystore with matching signature parameters..."
+            keytool -genkeypair -v -keystore protonvpn-plus.jks -alias protonplus -keyalg RSA -keysize 2048 -validity 10000 -storepass protonvpn -keypass protonvpn -dname "CN=ProtonVPNPlus, OU=ProtonVPNPlus, O=ProtonVPNPlus, L=Geneva, C=CH"
+          fi
 
       - name: Make gradlew executable
         run: chmod +x gradlew
